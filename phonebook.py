@@ -14,9 +14,12 @@ while True:
 
     if choice == "1":
         name = input("Имя: ")
-        phone = input("Номер: ")
-        contacts[name] = phone
-        print(f"Контакт {name} успешно добавлен!")
+        if name in contacts:
+            print("Такой контакт уже есть, используйте другое имя!")
+        else:
+            phone = input("Номер: ")
+            contacts[name] = phone
+            print(f"Контакт {name} успешно добавлен!")
     
     elif choice == "2":
         name = input("Кого найти? ")
