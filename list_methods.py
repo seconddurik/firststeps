@@ -1,5 +1,5 @@
-numbers = [1, 5, 8, 7]
-print("Исходный вариант:", numbers)
+numbers = list(map(int, input("Введите числа через пробел: ").split()))
+print(numbers)
 
 numbers.sort()
 print("По возрастанию:", numbers)
