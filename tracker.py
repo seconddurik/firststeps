@@ -23,14 +23,16 @@ def show_tasks():
             print("Список пуст!")
         else:
             for i, task in enumerate(tasks, 1):
-                print(f"{i}. {task['title']} (Добавлено: {task['date']})")
+                status_mark = "[x]" if task.get("status") == "done" else "[]"
+                print(f"{i}. {status_mark} {task['title']} (Добавлено: {task['date']})")
 def add_tasks():
         new_task = input("Что добавить? ")
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
-        task_dict = {"title": new_task, "date": now}
+        task_dict = {"title": new_task, "date": now, "status": "active"}
         tasks.append(task_dict)
         save_tasks(tasks)
         print("Задача добавлена!")
+
 def delete_tasks():
         print("Ваши задачи: ")
         for i, task in enumerate(tasks, 1):
@@ -46,6 +48,7 @@ def delete_tasks():
                 print(f"Задача '{deleted_task['title']}' успешно удалена! ")
             else:
                 print("Задачи с таким порядковым номером не существует! ")
+
 def clear_tasks():
         confirm = input("Вы уверены? (д/н): ")
         if confirm.lower() == "д":
@@ -54,44 +57,90 @@ def clear_tasks():
             print("Все задачи удалены! ")
         else:
             print("Действие отменено. ")
+
 def edit_tasks():
     if not tasks:
         print("Список пуст!")
+        return
+    print("Ваши задачи:")
+    for i, task in enumerate(tasks, 1):
+        status_mark = "[x]" if task.get("status") == "done" else "[ ]"
+        print(f"{i}. {status_mark} {task['title']}")
+    choice = int(input("Какую задачу отменить?"))
+    if not choice.isdigit:
+        print("Ошибка! Введите число!")
     else:
-        for i, task in enumerate(tasks, 1):
-            print(f"{i}. {task['title']} (добавлено: {task['date']})")
-        choice = input("")
-        if not choice.isdigit():
-            print("Ошибка!")
-        else:
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(tasks):
-                new_title = input("")
-                tasks[choice_num - 1]["title"] = new_title
-                save_tasks(tasks)
-                print("Готово!")
+        if 1 <= choice <= len(tasks):
+            if tasks[choice - 1].get("status") == "done":
+                tasks[choice - 1]["status"] = "active"
+                print("Задача снова активна!")
             else:
-                print("Нет такого номера!")
+                tasks[choice - 1]["status"] = "done"
+                print("Задача выполнена!")
+            save_tasks(tasks)
+        else:
+            print("Задачи с таким номером не существует! ")
+
+def toggle_status():
+    if not tasks:
+        print("Список пуст!")
+        return
+    print("Ваши задачи: ")
+    for i, task in enumerate(tasks, 1):
+                status_mark = "[x]" if task.get("status") == "done" else "[]"
+                print(f"{i}. {status_mark} {task['title']} (Добавлено: {task['date']})")
+    choice = input("Какую задачу отменить? (введите число):")
+    if not choice.isdigit():
+        print("Ошибка! Введите число!")
+    else:
+        choice_num = int(choice)
+        if 1 <= choice_num <= len(tasks):
+            if tasks[choice_num - 1].get("status") == "done":
+                tasks[choice_num - 1]["status"] = "active"
+                print("Задача снова активна!")
+            else:
+                tasks[choice_num - 1]["status"] = "done"
+                print("Задача выполнена!")
+            save_tasks(tasks)
+        else:
+            print("Задачи с таким номером не существует!")
+
+def search_task():
+    zapr = input("Введите слово для поиска: ").lower()
+    found = False
+
+    print("\nРезультаты поиска:")
+    for i, task in enumerate(tasks, 1):
+        if zapr in task['title'].lower():
+            status_mark = "[x]" if task.get("status") == "done" else "[ ]"
+            print(f"{i}. {status_mark} {task['title']} (Добавлено: {task['date']})")
+            found = True
+    if not found:
+        print("Ничего не найдено.")
 
 tasks = load_tasks()
 
 while True:
-    print("1. Показать задачи\n2. Добавить задачу\n3. Выход\n4. Удалить задачу\n5. Редактировать задачу\n6. Очистить всё")
+    print("1. Показать задачи\n2. Добавить задачу\n3. Удалить задачу\n4. Редактировать задачу\n5. Найти задачу\n6. Отметить выполненной\n7. Очистить всё\n8. Выход")
     
-    zad = input("Выберите число (1-6): ")
+    zad = input("Выберите число (1-8): ")
     
-    if zad == "3":
+    if zad == "8":
         print("Всего доброго!")
         break
     elif zad == "1":
         show_tasks()
     elif zad == "2":
         add_tasks()
-    elif zad == "4":
+    elif zad == "3":
         delete_tasks()
-    elif zad == "5":
+    elif zad == "4":
         edit_tasks()
     elif zad == "6":
+        toggle_status()
+    elif zad == "5":
+        search_task()
+    elif zad == "7":
         clear_tasks()
     else:
-        print("Такого пункта нет. введи 1-6.")
+        print("Такого пункта нет. введи 1-8.")
